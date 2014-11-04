@@ -1,4 +1,3 @@
-nm-setup-workshop
-=================
+# setup(); Workshop
 
-setup(); Workshop // Kunsthochschule Kassel
+Kunsthochschule Kassel
