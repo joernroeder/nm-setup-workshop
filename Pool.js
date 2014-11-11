@@ -8,24 +8,18 @@ var Pool = function (maxCrawlers, Crawler) {
 	this.Crawler = Crawler;
 };
 
-Pool.prototype.addCrawler = function () {
+Pool.prototype.addCrawler = function (url) {
 	var _this = this;
 
-	this.getFromQueue(function (err, url) {
-		if (err || !url) {
-			return;
-		}
+	_this.addToSeen(url, function () {
+		_this.currentCrawlers++;
+		new _this.Crawler(url, function (urlToAdd) {
+			_this.addToQueue(urlToAdd);
+		}, function () {
+			_this.currentCrawlers--;
 
-		_this.addToSeen(url, function () {
-			_this.currentCrawlers++;
-			new _this.Crawler(url, function (url) {
-				_this.addToQueue(url);
-			}, function () {
-				_this.currentCrawlers--;
-
-				// start new crawler
-				_this.startCrawler();
-			});
+			// start new crawler
+			_this.startCrawler();
 		});
 	});
 };
