@@ -27,6 +27,7 @@ Crawler.prototype.crawl = function () {
 
 		var $ = cheerio.load(body);
 		_this.findNewLinks($);
+		//_this.analyseBody($);
 	});
 };
 
@@ -44,7 +45,6 @@ Crawler.prototype.cleanupUrl = function (url, callback) {
 };
 
 Crawler.prototype.analyseBody = function ($) {
-
 };
 
 Crawler.prototype.findNewLinks = function ($) {

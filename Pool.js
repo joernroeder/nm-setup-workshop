@@ -11,8 +11,6 @@ var Pool = function (maxCrawlers, Crawler) {
 	this.currentCrawlers = 0;
 	this.maxCrawlers = maxCrawlers;
 
-	this.seen = {};
-
 	this.Crawler = Crawler;
 };
 
