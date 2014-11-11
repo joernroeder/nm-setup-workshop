@@ -9,7 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "blake2s": "^1.0.1",
     "cheerio": "^0.17.0",
+    "hiredis": "^0.1.17",
+    "redis": "^0.12.1",
     "request": "^2.47.0"
   }
 }

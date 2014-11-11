@@ -1,8 +1,16 @@
+var Blake2s = require('blake2s');
+
+var redis = require('redis');
+var client = redis.createClient(6379, '192.168.178.142', {});
+
+client.on('error', function (err) {
+	console.log('Redis Error: ' + err);
+});
+
 var Pool = function (maxCrawlers, Crawler) {
 	this.currentCrawlers = 0;
 	this.maxCrawlers = maxCrawlers;
 
-	this.queue = [];
 	this.seen = {};
 
 	this.Crawler = Crawler;
@@ -52,35 +60,35 @@ Pool.prototype.startCrawler = function () {
 };
 
 Pool.prototype.getFromQueue = function (callback) {
-	return callback(null, this.queue.shift());
+	client.spop('queue', callback);
 };
 
 Pool.prototype.addToQueue = function (url, callback) {
 	var _this = this;
 
-	this.queue.push(url);
+	client.sadd('queue', url, callback);
 
 	if (this.canCreateNewCrawler()) {
 		setImmediate(function () {
 			_this.startCrawler();
 		});
 	}
+};
 
-	if (callback) {
-		return callback();
-	}
+Pool.prototype.convertUrlToHash = function (url) {
+	return new Blake2s().update(url).digest('hex');
 };
 
 Pool.prototype.addToSeen = function (url, callback) {
-	this.seen[url] = 1;
-
-	return callback();
+	client.set(this.convertUrlToHash(url), 1, callback);
 };
 
 Pool.prototype.hasSeen = function (url, callback) {
-	var hasSeen = this.seen[url] ? true : false;
+	client.get(this.convertUrlToHash(url), function (err, reply) {
+		var hasSeen = reply ? true : false;
 
-	return callback(null, hasSeen);
+		return callback(null, hasSeen);
+	});
 };
 
 module.exports = Pool;
