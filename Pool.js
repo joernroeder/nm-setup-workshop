@@ -17,16 +17,26 @@ var Pool = function (maxCrawlers, Crawler) {
 Pool.prototype.addCrawler = function (url) {
 	var _this = this;
 
-	_this.addToSeen(url, function () {
-		_this.currentCrawlers++;
-		new _this.Crawler(url, function (urlToAdd) {
+	var crawlerApi = {
+		addToQueue: function (urlToAdd) {
 			_this.addToQueue(urlToAdd);
-		}, function () {
+		},
+
+		onRequestFinishedCallback: function () {
 			_this.currentCrawlers--;
 
 			// start new crawler
 			_this.startCrawler();
-		});
+		},
+
+		saveItem: function (url, item) {
+			_this.saveItem(url, item);
+		}
+	};
+
+	_this.addToSeen(url, function () {
+		_this.currentCrawlers++;
+		new _this.Crawler(url, crawlerApi);
 	});
 };
 
@@ -87,6 +97,11 @@ Pool.prototype.hasSeen = function (url, callback) {
 
 		return callback(null, hasSeen);
 	});
+};
+
+Pool.prototype.saveItem = function (url, item) {
+	console.log('saving item', item);
+	client.sadd('items', item);
 };
 
 module.exports = Pool;
