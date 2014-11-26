@@ -1,7 +1,7 @@
 var Blake2s = require('blake2s');
 
 var redis = require('redis');
-var client = redis.createClient(6379, '192.168.178.29', {});
+var client = redis.createClient();
 
 client.on('error', function (err) {
 	console.log('Redis Error: ' + err);
