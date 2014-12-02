@@ -37,11 +37,11 @@ TextToMMLConverter.prototype.convert = function (text) {
 	}
 
 	return {
-		//attack: this.getRandom(text.length),
-		release: this.getRandom(convertedItem.length),
-		lv: Math.random(),
-		length: text.length,
-		mml: convertedItem
+		//attack	: this.getRandom(text.length),
+		release		: this.getRandom(convertedItem.length),
+		lv			: Math.random(),
+		length		: text.length,
+		mml			: convertedItem
 	};
 };
 
