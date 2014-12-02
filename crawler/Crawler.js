@@ -1,10 +1,9 @@
 var request = require('request');
 var cheerio = require('cheerio');
 
-var Crawler = function (url, addToQueue, onRequestFinishedCallback) {
+var Crawler = function (url, api) {
 	this.url = url;
-	this.addToQueue = addToQueue;
-	this.onRequestFinishedCallback = onRequestFinishedCallback;
+	this.api = api;
 
 	this.crawl();
 };
@@ -14,7 +13,7 @@ Crawler.prototype.crawl = function () {
 
 	request(this.url, function (err, response, body) {
 		// start new crawler
-		_this.onRequestFinishedCallback();
+		_this.api.onRequestFinishedCallback();
 		
 		if (err || response.statusCode != 200) {
 			return;
@@ -27,6 +26,7 @@ Crawler.prototype.crawl = function () {
 
 		var $ = cheerio.load(body);
 		_this.findNewLinks($);
+		_this.analyseBody($);
 	});
 };
 
@@ -44,7 +44,13 @@ Crawler.prototype.cleanupUrl = function (url, callback) {
 };
 
 Crawler.prototype.analyseBody = function ($) {
+	var title = $('h1').text();
 
+	if (!title) {
+		return;
+	}
+
+	this.api.saveItem(this.url, title);
 };
 
 Crawler.prototype.findNewLinks = function ($) {
@@ -60,7 +66,7 @@ Crawler.prototype.findNewLinks = function ($) {
 
 		_this.cleanupUrl(href, function (err, url) {
 			if (!err) {
-				_this.addToQueue(url);
+				_this.api.addToQueue(url);
 			}
 		});
 	});
